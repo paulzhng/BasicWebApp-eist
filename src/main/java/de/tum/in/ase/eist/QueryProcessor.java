@@ -2,7 +2,9 @@ package de.tum.in.ase.eist;
 
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -12,6 +14,7 @@ public class QueryProcessor {
 
     private static final Pattern ADDITION_PATTERN = Pattern.compile("what is (\\d+) plus (\\d+)");
     private static final Pattern MULTIPLICATION_PATTERN = Pattern.compile("what is (\\d+) multiplied by (\\d+)");
+
     private static final Pattern LARGEST_NUMBER_PATTERN = Pattern.compile("which of the following numbers is the largest: (.+)");
     private static final Pattern SQUARE_AND_CUBE_PATTERN = Pattern.compile("which of the following numbers is both a square and a cube: (.+)");
     private static final Pattern PRIME_PATTERN = Pattern.compile("which of the following numbers are primes: (.+)");
@@ -93,6 +96,8 @@ public class QueryProcessor {
                     .collect(Collectors.joining(", "));
         } else if (query.contains("which city is the Eiffel tower in".toLowerCase())) {
             return "Paris";
+        } else if (query.contains("who played James Bond in the film Dr No".toLowerCase())) {
+            return "Sean Connery";
         }
 
         return "";

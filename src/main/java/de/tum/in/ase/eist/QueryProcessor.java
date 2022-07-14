@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 public class QueryProcessor {
@@ -12,6 +13,7 @@ public class QueryProcessor {
     private static final Pattern ADDITION_PATTERN = Pattern.compile("what is (\\d+) plus (\\d+)");
     private static final Pattern MULTIPLICATION_PATTERN = Pattern.compile("what is (\\d+) multiplied by (\\d+)");
     private static final Pattern LARGEST_NUMBER_PATTERN = Pattern.compile("which of the following numbers is the largest: (.+)");
+    private static final Pattern SQUARE_AND_CUBE_PATTERN = Pattern.compile("which of the following numbers is both a square and a cube: (.+)");
 
     public String process(String query) {
         query = query.toLowerCase();
@@ -56,9 +58,32 @@ public class QueryProcessor {
             int a = Integer.parseInt(matcher.group(1));
             int b = Integer.parseInt(matcher.group(2));
             return String.valueOf(a * b);
+        } else if (SQUARE_AND_CUBE_PATTERN.asPredicate().test(query)) {
+            Matcher matcher = SQUARE_AND_CUBE_PATTERN.matcher(query);
+            if (!matcher.find()) {
+                return "";
+            }
+
+            String numbersString = matcher.group(1);
+            return Arrays.stream(numbersString.split(","))
+                    .map(String::trim)
+                    .mapToInt(Integer::parseInt)
+                    .filter(n -> n > 0)
+                    .filter(QueryProcessor::isSquareOrCube)
+                    .boxed()
+                    .map(String::valueOf)
+                    .collect(Collectors.joining(", "));
         }
 
         return "";
+    }
+
+    private static final double EPS = 0.00001;
+
+    private static boolean isSquareOrCube(int n) {
+        double sqrt = Math.sqrt(n);
+        double cube = Math.cbrt(n);
+        return Math.abs((sqrt - (int) sqrt)) < EPS && Math.abs((cube - (int) cube)) < EPS;
     }
 
     public static void main(String[] args) {

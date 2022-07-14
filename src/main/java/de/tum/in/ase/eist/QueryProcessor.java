@@ -2,10 +2,14 @@ package de.tum.in.ase.eist;
 
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
 public class QueryProcessor {
+
+    private static final Pattern LARGEST_NUMBER_PATTERN = Pattern.compile("which of the following numbers is the largest: (.+)");
 
     public String process(String query) {
 		query = query.toLowerCase();
@@ -29,9 +33,23 @@ public class QueryProcessor {
                     return "";
                 }
             }
-        } else if (query.contains("which of the following numbers is the largest: ")) {
-            Pattern pattern = Pattern.compile("which of the following numbers is the largest: (.+)");
+        } else if (LARGEST_NUMBER_PATTERN.asPredicate().test(query)) {
+            Matcher matcher = LARGEST_NUMBER_PATTERN.matcher(query);
+            if (!matcher.find()) {
+                return "";
+            }
 
+            String numbers = matcher.group(1);
+            try {
+                int max = Arrays.stream(numbers.split(","))
+                        .map(String::trim)
+                        .mapToInt(Integer::parseInt)
+                        .max()
+                        .orElse(0);
+                return String.valueOf(max);
+            } catch (NumberFormatException e) {
+                return "";
+            }
         }
 
         return "";

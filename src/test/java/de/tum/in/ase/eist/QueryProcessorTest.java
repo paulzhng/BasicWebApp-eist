@@ -1,15 +1,21 @@
 package de.tum.in.ase.eist;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class QueryProcessorTest {
 
-	private final QueryProcessor queryProcessor = new QueryProcessor();
+	private final QueryProcessor queryProcessor;
 
-	@Test
+    @Autowired
+    QueryProcessorTest(QueryProcessor queryProcessor) {
+        this.queryProcessor = queryProcessor;
+    }
+
+    @Test
 	void testEmptyStringIfCannotProcessQuery() {
 		assertEquals("", queryProcessor.process("test"));
 	}

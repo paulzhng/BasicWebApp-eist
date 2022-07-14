@@ -2,6 +2,8 @@ package de.tum.in.ase.eist;
 
 import org.springframework.stereotype.Service;
 
+import java.util.regex.Pattern;
+
 @Service
 public class QueryProcessor {
 
@@ -19,10 +21,17 @@ public class QueryProcessor {
             if (splitted.length < 2) {
                 return "";
             } else {
-                int a = Integer.parseInt(splitted[0].trim());
-                int b = Integer.parseInt(splitted[1].trim());
-                return String.valueOf(a + b);
+                try {
+                    int a = Integer.parseInt(splitted[0].trim());
+                    int b = Integer.parseInt(splitted[1].trim());
+                    return String.valueOf(a + b);
+                } catch (NumberFormatException e) {
+                    return "";
+                }
             }
+        } else if (query.contains("which of the following numbers is the largest: ")) {
+            Pattern pattern = Pattern.compile("which of the following numbers is the largest: (.+)");
+
         }
 
         return "";

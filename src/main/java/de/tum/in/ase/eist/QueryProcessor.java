@@ -14,6 +14,7 @@ public class QueryProcessor {
     private static final Pattern MULTIPLICATION_PATTERN = Pattern.compile("what is (\\d+) multiplied by (\\d+)");
     private static final Pattern LARGEST_NUMBER_PATTERN = Pattern.compile("which of the following numbers is the largest: (.+)");
     private static final Pattern SQUARE_AND_CUBE_PATTERN = Pattern.compile("which of the following numbers is both a square and a cube: (.+)");
+    private static final Pattern PRIME_PATTERN = Pattern.compile("which of the following numbers are primes: (.+)");
 
     public String process(String query) {
         query = query.toLowerCase();
@@ -73,6 +74,23 @@ public class QueryProcessor {
                     .boxed()
                     .map(String::valueOf)
                     .collect(Collectors.joining(", "));
+        } else if (query.contains("which year was Theresa May first elected as the Prime Minister of Great Britain".toLowerCase())) {
+            return "2016";
+        } else if (PRIME_PATTERN.asPredicate().test(query)) {
+            Matcher matcher = PRIME_PATTERN.matcher(query);
+            if (!matcher.find()) {
+                return "";
+            }
+
+            String numbersString = matcher.group(1);
+            return Arrays.stream(numbersString.split(","))
+                    .map(String::trim)
+                    .mapToInt(Integer::parseInt)
+                    .filter(n -> n > 0)
+                    .filter(QueryProcessor::isPrime)
+                    .boxed()
+                    .map(String::valueOf)
+                    .collect(Collectors.joining(", "));
         }
 
         return "";
@@ -84,6 +102,18 @@ public class QueryProcessor {
         double sqrt = Math.sqrt(n);
         double cube = Math.cbrt(n);
         return Math.abs((sqrt - (int) sqrt)) < EPS && Math.abs((cube - (int) cube)) < EPS;
+    }
+
+    private static boolean isPrime(int n) {
+        if (n == 1) {
+            return false;
+        }
+        for (int i = 2; i < n; i++) {
+            if (n % i == 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static void main(String[] args) {

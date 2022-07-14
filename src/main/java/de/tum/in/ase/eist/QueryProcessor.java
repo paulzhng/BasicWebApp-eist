@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 public class QueryProcessor {
 
     private static final Pattern ADDITION_PATTERN = Pattern.compile("what is (\\d+) plus (\\d+)");
+    private static final Pattern MULTIPLICATION_PATTERN = Pattern.compile("what is (\\d+) multiplied by (\\d+)");
     private static final Pattern LARGEST_NUMBER_PATTERN = Pattern.compile("which of the following numbers is the largest: (.+)");
 
     public String process(String query) {
@@ -46,13 +47,22 @@ public class QueryProcessor {
             } catch (NumberFormatException e) {
                 return "";
             }
+        } else if (MULTIPLICATION_PATTERN.asPredicate().test(query)) {
+            Matcher matcher = MULTIPLICATION_PATTERN.matcher(query);
+            if (!matcher.find()) {
+                return "";
+            }
+
+            int a = Integer.parseInt(matcher.group(1));
+            int b = Integer.parseInt(matcher.group(2));
+            return String.valueOf(a * b);
         }
 
         return "";
     }
 
     public static void main(String[] args) {
-        String answer = new QueryProcessor().process("what is 11 plus 1");
+        String answer = new QueryProcessor().process("0ddc4e10: what is 17 plus 13");
         System.out.println("answer = " + answer);
     }
 }

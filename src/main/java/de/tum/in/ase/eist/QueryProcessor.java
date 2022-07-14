@@ -91,6 +91,8 @@ public class QueryProcessor {
                     .boxed()
                     .map(String::valueOf)
                     .collect(Collectors.joining(", "));
+        } else if (query.contains("which city is the Eiffel tower in".toLowerCase())) {
+            return "Paris";
         }
 
         return "";

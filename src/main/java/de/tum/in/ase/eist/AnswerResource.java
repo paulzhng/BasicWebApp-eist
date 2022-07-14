@@ -24,8 +24,12 @@ public class AnswerResource {
 	@GetMapping("*")
 	public ResponseEntity<String> answer(@RequestParam("q") String query) {
 		logger.info("Received query \"{}\"", query);
-		String answer = queryProcessor.process(query);
-		return ResponseEntity.ok(answer);
+		try {
+			String answer = queryProcessor.process(query);
+			return ResponseEntity.ok(answer);
+		} catch (Exception e) {
+			return ResponseEntity.ok("");
+		}
 	}
 
 }
